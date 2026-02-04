@@ -83,10 +83,10 @@ STRIPE_SECRET_KEY=sk_test_...
 STRIPE_PUBLISHABLE_KEY=pk_test_...
 ```
 
-### Using Docker (Recommended)
+### Using Docker (Development)
 
 ```bash
-# Start all services
+# Start all services (dev)
 docker-compose up -d
 
 # View logs
@@ -96,11 +96,34 @@ docker-compose logs -f
 docker-compose down
 ```
 
-Services:
+Services (dev):
 - API: http://localhost:4000
 - API Docs: http://localhost:4000/api/docs
 - Web: http://localhost:3000
 - PostgreSQL: localhost:5432
+
+### Production-ish (LAN) Docker
+
+This runs optimized builds and binds to your LAN IP (not 0.0.0.0).
+
+1) Copy and edit env:
+```bash
+cp .env.prod.example .env.prod
+# edit JWT_SECRET and DATABASE_PASSWORD at minimum
+```
+
+2) Start:
+```bash
+docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build
+```
+
+3) Access from phone/laptop on Wi-Fi:
+- Web: http://192.168.1.70:3000
+- API: http://192.168.1.70:4000
+
+Notes:
+- DB/Redis are not published to host.
+- API runs migrations on container start.
 
 ### Manual Setup
 

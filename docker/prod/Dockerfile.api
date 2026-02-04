@@ -1,0 +1,38 @@
+# syntax=docker/dockerfile:1
+FROM node:20-alpine AS deps
+WORKDIR /app
+
+# Install deps at repo root so npm workspaces resolve @vision/*
+COPY package.json package-lock.json turbo.json ./
+COPY apps/api/package.json apps/api/package.json
+COPY apps/web/package.json apps/web/package.json
+COPY apps/mobile/package.json apps/mobile/package.json
+COPY packages/shared/package.json packages/shared/package.json
+COPY packages/contracts/package.json packages/contracts/package.json
+
+RUN npm ci
+
+FROM node:20-alpine AS build
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+# Build only what API needs
+RUN npx turbo run build --filter=@vision/api
+
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+
+# Copy node_modules + built artifacts
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=build /app/apps/api/dist ./apps/api/dist
+COPY --from=build /app/apps/api/package.json ./apps/api/package.json
+COPY --from=build /app/apps/api/node_modules ./apps/api/node_modules
+
+# Migrations live in dist/; run them at container start before server
+COPY docker/prod/entrypoint-api.sh /entrypoint-api.sh
+RUN chmod +x /entrypoint-api.sh
+
+EXPOSE 4000
+ENTRYPOINT ["/entrypoint-api.sh"]
