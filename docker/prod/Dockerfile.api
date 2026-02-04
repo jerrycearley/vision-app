@@ -7,6 +7,8 @@ RUN apk add --no-cache bash
 
 # Install deps at repo root so npm workspaces resolve @vision/*
 COPY package.json package-lock.json turbo.json ./
+# postinstall runs: bash scripts/fix-react.sh
+COPY scripts ./scripts
 COPY apps/api/package.json apps/api/package.json
 COPY apps/web/package.json apps/web/package.json
 COPY apps/mobile/package.json apps/mobile/package.json
