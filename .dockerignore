@@ -1,0 +1,15 @@
+node_modules
+**/node_modules
+.git
+.gitignore
+Dockerfile
+**/Dockerfile
+npm-debug.log
+docker-compose*.yml
+.env
+.env.*
+.turbo
+**/.turbo
+.openclaw
+**/.openclaw
+*.log
