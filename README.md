@@ -178,6 +178,36 @@ Interactive API docs available at: http://localhost:4000/api/docs
 
 ### Main Endpoints
 
+#### Health Check
+- `GET /healthz` - Liveness probe (is the service running?)
+- `GET /readyz` - Readiness probe (is the service ready to accept traffic?)
+
+Health endpoints are at the root path (not under `/api/v1`). They return JSON with status information:
+
+```json
+// GET /healthz - Liveness response
+{
+  "status": "ok",
+  "timestamp": "2026-02-05T12:00:00.000Z",
+  "requestId": "abc-123"
+}
+
+// GET /readyz - Readiness response (includes DB check)
+{
+  "status": "ok",
+  "timestamp": "2026-02-05T12:00:00.000Z",
+  "requestId": "abc-123",
+  "checks": {
+    "database": {
+      "status": "ok",
+      "responseTimeMs": 5
+    }
+  }
+}
+```
+
+The readiness endpoint returns HTTP 503 if any check fails.
+
 #### Authentication
 - `POST /api/v1/auth/register` - Register new user
 - `POST /api/v1/auth/login` - Login

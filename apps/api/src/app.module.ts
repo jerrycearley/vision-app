@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
@@ -11,6 +11,8 @@ import { RecommendationsModule } from './recommendations/recommendations.module'
 import { AIModule } from './ai/ai.module';
 import { TokensModule } from './tokens/tokens.module';
 import { SponsorshipModule } from './sponsorship/sponsorship.module';
+import { HealthModule } from './health/health.module';
+import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 import configuration from './config/configuration';
 import { dataSourceOptions } from './database/data-source';
 
@@ -25,6 +27,7 @@ import { dataSourceOptions } from './database/data-source';
       useFactory: () => dataSourceOptions,
       inject: [ConfigService],
     }),
+    HealthModule,
     AuthModule,
     UsersModule,
     GuardiansModule,
@@ -37,4 +40,8 @@ import { dataSourceOptions } from './database/data-source';
     SponsorshipModule,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RequestIdMiddleware).forRoutes('*');
+  }
+}
