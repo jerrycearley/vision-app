@@ -21,6 +21,9 @@ export interface ReadinessStatus extends HealthStatus {
 export class HealthService {
   private readonly logger = new Logger(HealthService.name);
   private static readonly DB_TIMEOUT_MS = 3000;
+  private static readonly READINESS_CACHE_MS = 1000;
+
+  private lastReadiness?: { at: number; value: ReadinessStatus };
 
   constructor(private readonly dataSource: DataSource) {}
 
@@ -33,6 +36,19 @@ export class HealthService {
   }
 
   async getReadiness(requestId?: string): Promise<ReadinessStatus> {
+    const now = Date.now();
+    if (
+      this.lastReadiness &&
+      now - this.lastReadiness.at < HealthService.READINESS_CACHE_MS
+    ) {
+      // Keep the cached checks, but refresh requestId/timestamp for easier tracing.
+      return {
+        ...this.lastReadiness.value,
+        timestamp: new Date().toISOString(),
+        ...(requestId && { requestId }),
+      };
+    }
+
     const dbCheck = await this.checkDatabase();
 
     const overallStatus = dbCheck.status === 'ok' ? 'ok' : 'error';
@@ -45,6 +61,8 @@ export class HealthService {
         database: dbCheck,
       },
     };
+
+    this.lastReadiness = { at: now, value: result };
 
     if (overallStatus !== 'ok') {
       this.logger.warn(`Readiness check failed: ${JSON.stringify(result)}`);
