@@ -2,6 +2,12 @@
 
 A full-stack monorepo application for personalized goal-setting, AI-powered roadmaps, and achievement rewards.
 
+## Product North Star
+
+This project exists to help people move toward **meaningful growth, wisdom, and self‑understanding**, while earning **tangible rewards (tokens)** for real progress on goals, education, and skills.
+
+Source of truth: [`PRODUCT_NORTH_STAR.md`](./PRODUCT_NORTH_STAR.md)
+
 ## Architecture
 
 ```
