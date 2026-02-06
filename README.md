@@ -106,6 +106,23 @@ Services (dev):
 
 This runs optimized builds and binds to your LAN IP (not 0.0.0.0).
 
+#### Testing from your phone (LAN access)
+
+If `http://<LAN_IP>:3000` works on this machine but not from your phone, it’s usually your Wi‑Fi/router blocking LAN client access.
+
+Checklist:
+- Ensure your phone is on the **same Wi‑Fi** as the server (not cellular).
+- Avoid **Guest Wi‑Fi** (often blocks access to LAN devices).
+- Disable VPN / “Private Relay” / security apps that intercept local HTTP.
+- If using AT&T Smart Home Manager / router settings, look for options like:
+  - *Guest network: allow access to local network*
+  - *AP / client isolation* / *wireless isolation*
+  - *Block LAN access*
+
+Quick diagnostics:
+- `http://<LAN_IP>:4000/healthz` (should return 200 + JSON)
+- `http://<LAN_IP>:4000/readyz` (checks DB readiness)
+
 1) Copy and edit env:
 ```bash
 cp .env.prod.example .env.prod
