@@ -12,6 +12,7 @@ import { AIModule } from './ai/ai.module';
 import { TokensModule } from './tokens/tokens.module';
 import { SponsorshipModule } from './sponsorship/sponsorship.module';
 import { HealthModule } from './health/health.module';
+import { AchievementsModule } from './achievements/achievements.module';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 import configuration from './config/configuration';
 import { dataSourceOptions } from './database/data-source';
@@ -38,6 +39,7 @@ import { dataSourceOptions } from './database/data-source';
     AIModule,
     TokensModule,
     SponsorshipModule,
+    AchievementsModule,
   ],
 })
 export class AppModule implements NestModule {
