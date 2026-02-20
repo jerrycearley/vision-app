@@ -7,6 +7,9 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "scheme": "vision",
+    "extra": {
+      "apiUrl": "http://192.168.1.70:4000/api/v1"
+    },
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
