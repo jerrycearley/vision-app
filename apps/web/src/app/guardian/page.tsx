@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { guardiansApi } from '@/lib/api';
 import { useAuthStore } from '@/stores/auth';
@@ -29,7 +28,6 @@ interface ConsentRecord {
 
 export default function GuardianPage() {
   const { user } = useAuthStore();
-  const router = useRouter();
   const [guardians, setGuardians] = useState<Guardian[]>([]);
   const [minors, setMinors] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,11 +39,7 @@ export default function GuardianPage() {
     notes: '',
   });
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  async function fetchData() {
+  const fetchData = useCallback(async () => {
     try {
       if (user?.isMinor) {
         const res = await guardiansApi.getMyGuardians();
@@ -59,7 +53,11 @@ export default function GuardianPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [user?.isMinor]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   async function handleInvite(e: React.FormEvent) {
     e.preventDefault();

@@ -1,27 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { usersApi } from '@/lib/api';
 import { useAuthStore } from '@/stores/auth';
 
-interface UserProfile {
-  bio?: string;
-  interests?: string[];
-  skills?: string[];
-  location?: string;
-  timezone?: string;
-  socialLinks?: Record<string, string>;
-  preferences?: {
-    emailNotifications: boolean;
-    pushNotifications: boolean;
-    publicProfile: boolean;
-  };
-}
-
 export default function ProfilePage() {
   const { user, fetchUser } = useAuthStore();
-  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
@@ -36,15 +21,10 @@ export default function ProfilePage() {
     publicProfile: false,
   });
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  async function fetchProfile() {
+  const fetchProfile = useCallback(async () => {
     try {
       const res = await usersApi.getProfile();
       const data = res.data;
-      setProfile(data.profile);
       setForm({
         displayName: data.displayName || '',
         bio: data.profile?.bio || '',
@@ -61,7 +41,11 @@ export default function ProfilePage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/DashboardLayout';
 import { roadmapsApi } from '@/lib/api';
@@ -41,11 +41,7 @@ export default function RoadmapDetailPage() {
   const [loading, setLoading] = useState(true);
   const [completing, setCompleting] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchRoadmap();
-  }, [params.id]);
-
-  async function fetchRoadmap() {
+  const fetchRoadmap = useCallback(async () => {
     try {
       const res = await roadmapsApi.get(params.id as string);
       setRoadmap(res.data);
@@ -54,7 +50,11 @@ export default function RoadmapDetailPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [params.id]);
+
+  useEffect(() => {
+    fetchRoadmap();
+  }, [fetchRoadmap]);
 
   async function handleCompleteMilestone(milestoneId: string) {
     setCompleting(milestoneId);

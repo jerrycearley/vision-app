@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useAuthStore } from '@/stores/auth';
 
 export default function HomePage() {
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated } = useAuthStore();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-accent-50 dark:from-gray-900 dark:to-gray-800">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { recommendationsApi, connectorsApi } from '@/lib/api';
 
@@ -49,11 +49,7 @@ export default function RecommendationsPage() {
   const [category, setCategory] = useState('all');
   const [interests, setInterests] = useState<any[]>([]);
 
-  useEffect(() => {
-    fetchData();
-  }, [category]);
-
-  async function fetchData() {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const [recosRes, interestsRes] = await Promise.all([
@@ -67,7 +63,11 @@ export default function RecommendationsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [category]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   async function handleGenerate() {
     setGenerating(true);

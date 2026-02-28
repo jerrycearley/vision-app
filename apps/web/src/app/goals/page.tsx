@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { goalsApi, roadmapsApi } from '@/lib/api';
 import Link from 'next/link';
@@ -23,11 +23,7 @@ export default function GoalsPage() {
   const [filter, setFilter] = useState('all');
   const [generatingRoadmap, setGeneratingRoadmap] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchGoals();
-  }, [filter]);
-
-  async function fetchGoals() {
+  const fetchGoals = useCallback(async () => {
     try {
       const status = filter === 'all' ? undefined : filter;
       const res = await goalsApi.list(status);
@@ -37,7 +33,11 @@ export default function GoalsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [filter]);
+
+  useEffect(() => {
+    fetchGoals();
+  }, [fetchGoals]);
 
   async function handleGenerateRoadmap(goalId: string) {
     setGeneratingRoadmap(goalId);
